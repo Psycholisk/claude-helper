@@ -8,6 +8,7 @@ A collection of custom slash commands for [Claude Code](https://docs.anthropic.c
 |---------|-------------|
 | `/refresher` | Summarize the current session context — what was discussed, last task worked on, and any pending user input |
 | `/fix-pr-comments` | Methodically address PR review comments — fetches comments via `gh` CLI, categorizes them, makes fixes, and posts replies |
+| `/bug-fix` | Guided bug fixing with reproduction-first repro, root-cause analysis, mandatory regression tests, and a structured PR. Accepts a Shortcut link/ID, Sentry link, or free-form bug description |
 
 ## Installation
 
@@ -33,6 +34,9 @@ After installing, the commands are available in any Claude Code session:
 /refresher
 /fix-pr-comments https://github.com/org/repo/pull/123
 /fix-pr-comments https://github.com/org/repo/pull/123 reviewer-username
+/bug-fix sc-12345
+/bug-fix https://yourorg.sentry.io/issues/...
+/bug-fix "users can't checkout when cart has more than 50 items"
 ```
 
 ## Adding New Commands
