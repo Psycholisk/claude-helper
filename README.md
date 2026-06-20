@@ -9,6 +9,7 @@ A collection of custom slash commands for [Claude Code](https://docs.anthropic.c
 | `/refresher` | Summarize the current session context — what was discussed, last task worked on, and any pending user input |
 | `/fix-pr-comments` | Methodically address PR review comments — fetches comments via `gh` CLI, categorizes them, makes fixes, and posts replies |
 | `/bug-fix` | Guided bug fixing with reproduction-first repro, root-cause analysis, mandatory regression tests, and a structured PR. Accepts a Shortcut link/ID, Sentry link, or free-form bug description |
+| `/pr-review` | Review a GitHub PR for correctness, security, conventions, tests, and regression risk, then post tiered (Critical/Warning/Suggestion) comments on the PR — inline where possible. Reads existing comments and the originating ticket first. Requires a PR link/number |
 
 ## Installation
 
