@@ -108,13 +108,19 @@ Offer: **Post all** / **Post Critical + Warning only** / **Don't post (show me h
 
 ## Phase 6: Post the Review
 
-Post all inline comments and the summary in a **single review API call**. Build the payload, then submit:
+Post all inline comments and the summary in a **single review API call**. Choose the review `event` from the findings being posted:
+
+- **≥1 Critical posted → `"REQUEST_CHANGES"`** — Criticals block the merge.
+- **No Critical posted → `"COMMENT"`** — advisory only.
+- Never use `"APPROVE"`.
+
+Build the payload, then submit:
 
 ```json
-// review.json
+// review.json — event is REQUEST_CHANGES when any Critical is posted, else COMMENT
 {
   "commit_id": "<headRefOid>",
-  "event": "COMMENT",
+  "event": "REQUEST_CHANGES",
   "body": "## 🔍 Automated review\n\n**Summary:** <1–2 sentences on overall state vs. ticket intent>\n\n**Tally:** 🔴 N Critical · 🟡 M Warning · 🔵 K Suggestion\n\n<Findings NOT tied to a specific line go here as a tiered bullet list.>",
   "comments": [
     { "path": "src/foo.ts", "line": 42, "side": "RIGHT", "body": "🔴 **Critical:** <issue>. <why it matters>. <suggested fix>." },
@@ -128,7 +134,7 @@ gh api "repos/<owner>/<repo>/pulls/<number>/reviews" --method POST --input revie
 ```
 
 Rules:
-- Use `event: "COMMENT"` — never auto-approve or auto-request-changes unless the user asks.
+- `event` is `REQUEST_CHANGES` when at least one Critical is in the posted set, otherwise `COMMENT`. Never auto-approve.
 - Each inline comment body starts with its tier badge: `🔴 **Critical:**`, `🟡 **Warning:**`, `🔵 **Suggestion:**`.
 - Line-specific findings → `comments[]`. Non-line findings (architecture, overall missing tests, ticket-scope gaps) → the review `body`.
 - If the API rejects a `comments[]` entry because the line isn't in the diff, move that finding into the review `body` and retry — don't drop it.
@@ -145,7 +151,7 @@ Print a short terminal confirmation: PR URL, the tally posted, duplicates skippe
 
 - Run without a PR argument
 - Re-post findings already raised by a human or a prior review
-- Auto-approve or auto-request-changes
+- Auto-approve a PR (it will Request Changes when Criticals exist, but never Approve)
 - Review the diff blind to the PR description and originating ticket
 - Post to the PR without confirming the tally first
 - Pad comments with praise or restate what the code obviously does
