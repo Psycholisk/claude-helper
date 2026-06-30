@@ -79,12 +79,16 @@ Summarize using `report-template.md`:
 - **Residual risk** — what wasn't or couldn't be tested.
 - **Recommendation** — ✅ ship / ⚠️ ship with follow-ups / ❌ fix first, with the reasoning.
 
-**Always post the summary back**, in this priority order:
-1. If a **Shortcut ticket** is available → post as a comment via `mcp__shortcut__stories-create-comment`.
-2. Else if a **PR** is available → post as a PR comment via `gh pr comment`.
-3. If neither is available → just present the report in chat.
+First **present the report in chat**. Then **ask the user whether to post it back** — don't post autonomously. QA often runs in multiple rounds (test → fix → re-test), so the first report may not be final, and the user decides when it's worth posting.
 
-This is a standing instruction from the user — post without asking each time. Still state clearly that you posted it and where (it's outward-facing). Post to **one** target (ticket preferred over PR), not both, unless the user asks otherwise.
+When the user says yes, post to **one** target in priority order: Shortcut ticket, else PR (else there's nowhere to post — leave it in chat).
+
+**Update the prior QA report instead of duplicating it** across rounds:
+- Begin every posted report with a stable marker as its first line — `<!-- qa-buddy-report -->` — followed by a `## 🧪 QA Report — Round N` heading.
+- **GitHub PR**: list existing comments (`gh pr view <n> --json comments`, or `gh api /repos/{owner}/{repo}/issues/{n}/comments`) and look for the marker. If found, edit that comment in place (`gh api -X PATCH /repos/{owner}/{repo}/issues/comments/{id} -f body=@file`); otherwise create one with `gh pr comment`. Bump the round number and keep a short trail of prior rounds (collapsed/summarized) so history isn't lost.
+- **Shortcut**: scan the story's comments for the marker. The MCP can create comments (`mcp__shortcut__stories-create-comment`) but may not support editing — if there's no edit tool, post a **new** "QA Report — Round N" comment that references the previous round, rather than silently overriding it. Don't leave several conflicting full reports; make it clear which is current.
+
+Always tell the user where you posted (it's outward-facing).
 
 ## Notes
 - This skill **does not fix bugs** — it finds and reports them. If the user wants fixes, that's a separate step (and per their workflow, in a git worktree, never on `main`).
