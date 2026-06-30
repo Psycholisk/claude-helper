@@ -1,6 +1,6 @@
 # claude-helper
 
-A collection of custom slash commands for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+A collection of custom slash commands and skills for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
 
 ## Commands
 
@@ -11,6 +11,14 @@ A collection of custom slash commands for [Claude Code](https://docs.anthropic.c
 | `/bug-fix` | Guided bug fixing with reproduction-first repro, root-cause analysis, mandatory regression tests, and a structured PR. Accepts a Shortcut link/ID, Sentry link, or free-form bug description |
 | `/pr-review` | Review a GitHub PR for correctness, security, conventions, tests, and regression risk, then post tiered (Critical/Warning/Suggestion) comments on the PR — inline where possible. Reads existing comments and the originating ticket first. Requires a PR link/number |
 
+## Skills
+
+Skills are richer, multi-file capabilities that Claude loads automatically when a task matches (or you can invoke explicitly as `/skill-name`).
+
+| Skill | Description |
+|-------|-------------|
+| `qa-buddy` | Run a structured QA pass on a block of work — a Shortcut ticket, GitHub PR, or local branch/diff. Analyzes what changed, builds a test plan tied to acceptance criteria, runs a guided verification (🤖 Claude-verifiable vs 🧑 human-required), and posts a ship/no-ship report back to the ticket or PR |
+
 ## Installation
 
 ```bash
@@ -19,7 +27,7 @@ cd claude-helper
 bash install.sh
 ```
 
-This creates symlinks from the repo's `commands/` directory into `~/.claude/commands/`, so commands stay in sync when you `git pull`.
+This creates symlinks from the repo's `commands/` directory into `~/.claude/commands/` and from `skills/` into `~/.claude/skills/`, so everything stays in sync when you `git pull`.
 
 ## Uninstall
 
@@ -59,9 +67,29 @@ description: Short description shown in command list
 Your prompt instructions here...
 ```
 
+## Adding New Skills
+
+1. Create a directory in `skills/` named after the skill (e.g. `skills/qa-buddy/`)
+2. Add a `SKILL.md` with YAML frontmatter (`name` + `description`) — the `description` controls when Claude auto-loads the skill
+3. Add any supporting files the skill references (templates, scripts) in the same directory
+4. Run `bash install.sh` to symlink the new skill
+
+### Skill file format
+
+```markdown
+---
+name: skill-name
+description: When this skill should be used — be specific; this drives auto-loading.
+---
+
+# Skill Title
+
+Workflow / instructions here...
+```
+
 ## How It Works
 
-Claude Code loads custom slash commands from `~/.claude/commands/`. Each `.md` file becomes a `/command-name` based on its filename. The markdown content is injected as a prompt when the command is invoked.
+Claude Code loads custom slash commands from `~/.claude/commands/` (each `.md` file becomes a `/command-name`) and skills from `~/.claude/skills/` (each directory with a `SKILL.md`). Commands are injected as a prompt when invoked; skills are loaded automatically when a task matches their `description`, or on demand via `/skill-name`.
 
 ## Requirements
 
