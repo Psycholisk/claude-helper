@@ -57,16 +57,23 @@ Present the plan to the user before running. Let them trim or add scenarios.
 
 ## Phase 4 — Guided run
 
-Work through the plan, tracking pass/fail/blocked per scenario.
+**Walk the plan one scenario at a time — do NOT dump the whole checklist for the user to run themselves.** The point of this phase is to drive QA interactively: handle a single scenario, settle its result, then move to the next. Work scenarios in plan order.
 
-**For 🤖 Claude-verifiable scenarios** — execute and capture evidence:
-- Run affected tests; run build & lint for the touched area.
-- Hit endpoints (curl/httpie) and assert responses.
-- Query the DB or check state where possible.
-- Logs: **non-local** via `logcli` with the `LOKI_*` env vars (quiqup-platform streams key on `namespace`, not `service_name`); **live pod** via `kubectl logs -f`.
-- Record the actual command and its output as evidence.
+Before starting, **set up a checklist to track progress** (use `TaskCreate`/`TaskUpdate` if available — one task per scenario — otherwise keep a running numbered list). Mark each scenario in-progress when you start it and pass/fail/blocked when it's done, so both you and the user can see what's left.
 
-**For 🧑 Human-required scenarios** — present each as a clear, numbered instruction ("Open X, do Y, you should see Z"). Collect the user's result before moving on. Don't mark a human scenario passed without confirmation.
+For **each** scenario, in order:
+1. **Announce it** — "Scenario 3/8: <name>" with its one-line goal, so the user knows where they are.
+2. **Run or hand off:**
+   - **🤖 Claude-verifiable** — execute it yourself now and capture evidence:
+     - Run affected tests; run build & lint for the touched area.
+     - Hit endpoints (curl/httpie) and assert responses.
+     - Query the DB or check state where possible.
+     - Logs: **non-local** via `logcli` with the `LOKI_*` env vars (quiqup-platform streams key on `namespace`, not `service_name`); **live pod** via `kubectl logs -f`.
+     - Record the actual command and its output as evidence.
+   - **🧑 Human-required** — present **just this one** as a clear instruction ("Open X, do Y, you should see Z") and **stop to wait for the user's result.** Don't queue up the next human step until this one is answered. Never mark a human scenario passed without their confirmation.
+3. **Record the result** (pass/fail/blocked + evidence) on the checklist, then **move to the next scenario.**
+
+Batch only when it's genuinely more efficient and non-interactive — e.g. run several 🤖 tests together — but still report each scenario's result individually and never batch 🧑 human steps. Keep going until every scenario has a result; then proceed to Phase 5.
 
 Mark anything you couldn't verify as **blocked**, with the reason. Never report a guess as a pass.
 
