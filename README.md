@@ -18,6 +18,7 @@ Skills are richer, multi-file capabilities that Claude loads automatically when 
 | Skill | Description |
 |-------|-------------|
 | `qa-buddy` | Run a structured QA pass on a block of work — a Shortcut ticket, GitHub PR, or local branch/diff. Analyzes what changed, builds a test plan tied to acceptance criteria, runs a guided verification (🤖 Claude-verifiable vs 🧑 human-required), and posts a ship/no-ship report back to the ticket or PR |
+| `adhd` | Reshape output for an ADHD reader — action first, numbered steps, progress restated each turn, concrete time estimates, no preamble or closers. **Explicit invocation only** (`disable-model-invocation`): `/adhd <prompt>` answers the prompt in that style; bare `/adhd` rewrites the previous response in it |
 
 ## Installation
 
@@ -46,7 +47,11 @@ After installing, the commands are available in any Claude Code session:
 /bug-fix sc-12345
 /bug-fix https://yourorg.sentry.io/issues/...
 /bug-fix "users can't checkout when cart has more than 50 items"
+/adhd how do I rotate the staging DB credentials?
+/adhd
 ```
+
+`/adhd` with no argument reshapes the previous response — it never re-runs tools or recomputes anything. The style applies to that one response; say "stay in adhd mode" to keep it on for the session and "stop adhd mode" to turn it off.
 
 ## Adding New Commands
 
