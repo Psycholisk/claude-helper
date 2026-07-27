@@ -18,6 +18,7 @@ Skills are richer, multi-file capabilities that Claude loads automatically when 
 | Skill | Description |
 |-------|-------------|
 | `qa-buddy` | Run a structured QA pass on a block of work — a Shortcut ticket, GitHub PR, or local branch/diff. Analyzes what changed, builds a test plan tied to acceptance criteria, runs a guided verification (🤖 Claude-verifiable vs 🧑 human-required), and posts a ship/no-ship report back to the ticket or PR |
+| `build-it` | End-to-end autonomous delivery of a Shortcut ticket. Composes the native `/goal` loop with `/feature-dev` (implement) and `/fix-pr-comments` (resolve review comments): implements the ticket, opens a PR against the default branch, merges to staging for QA, drives the pipeline green, and resolves the automated Claude review — leaving the human only QA + deploy. Runs solo, stopping only for critical/architectural decisions |
 
 ## Installation
 
