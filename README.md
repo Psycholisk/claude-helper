@@ -13,12 +13,13 @@ A collection of custom slash commands and skills for [Claude Code](https://docs.
 
 ## Skills
 
-Skills are richer, multi-file capabilities that Claude loads automatically when a task matches (or you can invoke explicitly as `/skill-name`).
+Skills are richer, multi-file capabilities that Claude loads automatically when a task matches (or you can invoke explicitly as `/skill-name`). A skill can opt out of auto-loading with `disable-model-invocation: true` in its frontmatter, making it explicit-invocation only.
 
 | Skill | Description |
 |-------|-------------|
 | `qa-buddy` | Run a structured QA pass on a block of work — a Shortcut ticket, GitHub PR, or local branch/diff. Analyzes what changed, builds a test plan tied to acceptance criteria, runs a guided verification (🤖 Claude-verifiable vs 🧑 human-required), and posts a ship/no-ship report back to the ticket or PR |
 | `build-it` | End-to-end autonomous delivery of a Shortcut ticket. Composes the native `/goal` loop with `/feature-dev` (implement), `/pr-review` (review the PR when CI has no code-reviewer step) and `/fix-pr-comments` (resolve review comments): implements the ticket, opens a PR against the default branch, merges to staging for QA, drives the pipeline green, and resolves the review comments — leaving the human only QA + deploy. Runs solo, stopping only for critical/architectural decisions |
+| `adhd` | Shape output for a reader with ADHD: lead with the next action, number multi-step work, restate where you are, suppress tangents, give concrete time estimates, make finished work visible. Explicit-invocation only — `/adhd <prompt>` answers that prompt in this style, bare `/adhd` reshapes the previous response without redoing any work |
 
 ## Installation
 
@@ -47,7 +48,11 @@ After installing, the commands are available in any Claude Code session:
 /bug-fix sc-12345
 /bug-fix https://yourorg.sentry.io/issues/...
 /bug-fix "users can't checkout when cart has more than 50 items"
+/adhd why is the staging deploy stuck?
+/adhd
 ```
+
+`/adhd` with nothing after it rewrites the previous response in the ADHD style, using only what is already on screen — it does not re-run tools or redo work.
 
 ## Adding New Commands
 
