@@ -21,6 +21,25 @@ Skills are richer, multi-file capabilities that Claude loads automatically when 
 | `build-it` | End-to-end autonomous delivery of a Shortcut ticket. Composes the native `/goal` loop with `/feature-dev` (implement), `/pr-review` (review the PR when CI has no code-reviewer step) and `/fix-pr-comments` (resolve review comments): implements the ticket, opens a PR against the default branch, merges to staging for QA, drives the pipeline green, and resolves the review comments — leaving the human only QA + deploy. Runs solo, stopping only for critical/architectural decisions |
 | `adhd` | Shape output for a reader with ADHD: lead with the next action, number multi-step work, restate where you are, suppress tangents, give concrete time estimates, make finished work visible. Explicit-invocation only — `/adhd <prompt>` answers that prompt in this style, bare `/adhd` reshapes the previous response without redoing any work |
 | `shorten` | Strip output down to the straight answer. Explicit-invocation only — bare `/shorten` condenses the previous response without redoing work, `/shorten <prompt>` answers tersely, `-s` toggles terse mode for the whole session, `-en` layers plain-English phrasing (no code, no jargon) on top |
+| `blast-radius` | Impact report for a whole change (often several PRs across repos): plain-English summary, client / end-user / internal-team impact, services and contracts touched, gates and rollout, regression points, post-deploy watch, who to notify, and per-PR staging/prod deploy status. Optionally posts one report per ticket |
+| `qa-it` | QA one or more tickets end to end: a QA plan from the acceptance criteria and regression risks, one up-front ask for missing access, an autonomous run with evidence (or `-i` to walk through it), and a fixed QA checklist report. Keeps a capabilities registry so each run covers more |
+| `ship-it` | Post-merge close-out: waits until the PRs are live, cleans up worktrees and branches, posts a blast-radius report on each ticket, moves tickets to done, drafts team / deploy-watch / shipped messages for approval, proposes todo-app monitoring tasks, and has a `watch` mode for daily post-deploy checks |
+
+### Delivery skills: `blast-radius`, `qa-it`, `ship-it`
+
+These three work as a chain (`/build-it` → `/qa-it` → `/ship-it`, with `/blast-radius` underneath) and are **generic**: nothing about a specific company is baked in. Your team's details live in one folder outside the repo, `~/.claude/delivery-skills/`, so `git pull` never overwrites them:
+
+| File | Holds |
+|---|---|
+| `config.env` | Ticket tracker, GitHub org, where your clones live, how deploys are detected (GitOps bump commits or GitHub Deployments), timezone, chat tool, todo app |
+| `service-map.md` | Your repos, who each reaches, deploy quirks, hidden data readers |
+| `channels.md` | Which channel or person each audience hears from |
+| `capabilities.md` | What QA and monitoring can reach (logs, clusters, DBs, test accounts) and the open gaps |
+| `qa-it.env` | QA secrets (`chmod 600`) |
+
+**Onboarding is automatic:** the first time any of the three runs, it creates the folder from the templates, works out what it can (org, code root, timezone, deploy signals), and asks for the rest in one message. It only asks for what the current run needs, and never asks again for a value that's filled.
+
+**Tailoring is where they get good.** The generic versions work out of the box, but they get much sharper as those files fill in. The biggest wins are deploy quirks per repo, exact log/DB/test-account recipes for QA, and channel IDs. See `skills/blast-radius/references/setup.md` for the full list.
 
 ## Installation
 
@@ -104,4 +123,5 @@ Claude Code loads custom slash commands from `~/.claude/commands/` (each `.md` f
 ## Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
-- [GitHub CLI](https://cli.github.com/) (`gh`) — required by `/fix-pr-comments`
+- [GitHub CLI](https://cli.github.com/) (`gh`) — required by `/fix-pr-comments` and the delivery skills
+- `jq` — required by the delivery skills' scripts
