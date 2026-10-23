@@ -1,4 +1,5 @@
 ---
+name: pr-review
 description: Review a GitHub PR for correctness, security, conventions, tests, and regression risk — then post tiered (Critical/Warning/Suggestion) comments directly on the PR, inline where possible. Reads existing comments and the originating ticket first.
 argument-hint: GitHub PR URL or number (required), e.g. https://github.com/org/repo/pull/123 or 123
 ---

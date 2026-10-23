@@ -1,4 +1,5 @@
 ---
+name: fix-pr-comments
 description: Methodically address PR review comments — fetch them with gh, categorize, fix, and reply
 ---
 
