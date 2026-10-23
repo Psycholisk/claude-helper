@@ -1,4 +1,5 @@
 ---
+name: bug-fix
 description: Guided bug fixing with reproduction-first, root-cause analysis, and mandatory regression tests
 argument-hint: Bug ticket URL/ID (Shortcut, GitHub issue, Jira, Linear, Trello, etc.) or free-form description
 ---

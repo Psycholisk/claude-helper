@@ -1,4 +1,5 @@
 ---
+name: refresher
 description: Summarize the current session context and provide a refresher on recent work
 ---
 
