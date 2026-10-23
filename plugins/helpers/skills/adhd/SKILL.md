@@ -11,6 +11,8 @@ The reader has ADHD. Output is not just brief. It is shaped so an ADHD brain can
 
 ## Invocation
 
+Installed from the `helpers` plugin, the command is `/helpers:adhd`. Below it is written `/adhd` for short; treat the two as the same.
+
 This skill only runs when the reader types `/adhd`. Two forms:
 
 **`/adhd <prompt>`** — treat everything after `/adhd` as the actual request. Do the work, then answer under the rules below. The rules govern the shape of the answer; they never shrink the work.

@@ -1,11 +1,13 @@
 ---
 name: build-it
-description: End-to-end autonomous delivery of a Shortcut ticket. Use when the user says "build it", "/build-it sc-XXXX", "ship this ticket", or wants a ticket implemented, PR'd, merged to staging, and made green with review comments resolved — leaving only QA + deploy for the human. Composes the native /goal autonomous loop with /feature-dev (implementation), /pr-review (when CI has no code-reviewer step) and /fix-pr-comments (review fixes).
+description: End-to-end autonomous delivery of a Shortcut ticket. Use when the user says "build it", "/delivery:build-it sc-XXXX", "ship this ticket", or wants a ticket implemented, PR'd, merged to staging, and made green with review comments resolved — leaving only QA + deploy for the human. Composes the native /goal autonomous loop with /feature-dev:feature-dev (implementation), /helpers:pr-review (when CI has no code-reviewer step) and /helpers:fix-pr-comments (review fixes).
 argument-hint: A Shortcut ticket (sc-XXXX) or its URL
 version: 0.2.0
 ---
 
 # build-it — autonomous ticket → staging pipeline
+
+**Requires:** the `helpers` plugin from this marketplace (for `/helpers:pr-review` and `/helpers:fix-pr-comments`) and the official `feature-dev` plugin (for `/feature-dev:feature-dev`).
 
 Take a Shortcut ticket and drive it all the way to a state where **the only things left for the human are QA and deploy**. You implement it, open the PR against the default branch, merge the changes to staging for QA, get the pipeline green, and resolve the PR review comments — running autonomously and interrupting the user only for decisions you genuinely cannot make.
 
@@ -14,7 +16,7 @@ Take a Shortcut ticket and drive it all the way to a state where **the only thin
 2. PR opened against the repo's **default integration branch** (never staging, never merged to main).
 3. Branch merged into **staging** (direct git merge + push) so the human can QA.
 4. **All CI/pipeline checks green.**
-5. A **PR review has run** — CI's reviewer if the repo has one, otherwise `/pr-review` run by you — and its comments are resolved.
+5. A **PR review has run** — CI's reviewer if the repo has one, otherwise `/helpers:pr-review` run by you — and its comments are resolved.
 6. Shortcut ticket moved to **Ready for QA** with a summary comment.
 
 Input ticket: `$ARGUMENTS`
@@ -33,7 +35,7 @@ This skill is built on the native **`/goal`** command (Claude Code v2.1.139+). `
 First do **Phase 0** (setup) below so you know the ticket, repos, and branch. Then recommend the user enable **auto mode** for a truly unattended run (tell them: "Enable auto mode so I don't stop on every tool call"), and set the goal with a contract like this (fill in the specifics; keep under 4000 chars):
 
 ```
-/goal Ticket <sc-XXXX> is fully delivered to staging. This holds ONLY when the transcript shows ALL of: (1) the feature implemented and local quality review clean; (2) `gh pr view` shows an OPEN PR against the default branch (main/develop), NOT staging; (3) `git push` output shows the branch merged into staging for each affected repo; (4) `gh pr checks <PR>` shows every check GREEN; (5) the transcript shows whether CI has a code-reviewer step, and — if it does not — that /pr-review was run on the PR right after it was opened; either way `gh` shows no unresolved review comments; (6) the Shortcut ticket is in "Ready for QA". Do NOT merge to main. Constraints: only run tests for affected areas; never force-push over someone else's staging work without verifying. STOP and clear the goal if a critical/architectural decision, unresolvable ambiguity, or destructive/irreversible action is required — or after 40 turns.
+/goal Ticket <sc-XXXX> is fully delivered to staging. This holds ONLY when the transcript shows ALL of: (1) the feature implemented and local quality review clean; (2) `gh pr view` shows an OPEN PR against the default branch (main/develop), NOT staging; (3) `git push` output shows the branch merged into staging for each affected repo; (4) `gh pr checks <PR>` shows every check GREEN; (5) the transcript shows whether CI has a code-reviewer step, and — if it does not — that /helpers:pr-review was run on the PR right after it was opened; either way `gh` shows no unresolved review comments; (6) the Shortcut ticket is in "Ready for QA". Do NOT merge to main. Constraints: only run tests for affected areas; never force-push over someone else's staging work without verifying. STOP and clear the goal if a critical/architectural decision, unresolvable ambiguity, or destructive/irreversible action is required — or after 40 turns.
 ```
 
 Then execute the phases in order. If you were invoked without `/goal` being available (older CLI, hooks disabled), just run the phases directly and tell the user the loop won't auto-continue between turns.
@@ -60,7 +62,7 @@ When you stop, present the decision crisply with your recommendation and concret
 
 1. **Read the ticket** via Shortcut MCP: `mcp__shortcut__stories-get-by-id`. Capture title, description, acceptance criteria, tasks, comments, and any linked repos/PRs.
 2. **Move ticket to In Progress** (`stories-update` → workflow_state_id `500001434`) and assign to the user if unassigned.
-3. **Identify affected repo(s).** A ticket may touch more than one repo (e.g. invoicer + quiqup-platform + salesforce-to-kafka). Determine them from the ticket and codebase. Handle each repo independently through Phases 3–6.
+3. **Identify affected repo(s).** A ticket may touch more than one repo (e.g. a billing service + the platform API + a CRM sync). Determine them from the ticket and codebase. Handle each repo independently through Phases 3–6.
 4. **Create a worktree per repo** (never work on `main`):
    - From the repo's main dir: `git checkout main && git pull origin main`, ensure `../worktrees/` exists.
    - Branch name: `<type>/sc-<id>/<short-kebab-desc>` where type ∈ `feat|fix|chore|refactor|docs` (type prefix goes **before** the sc id).
@@ -68,9 +70,9 @@ When you stop, present the decision crisply with your recommendation and concret
 
 ---
 
-## Phase 1 — Implement (autonomous /feature-dev)
+## Phase 1 — Implement (autonomous /feature-dev:feature-dev)
 
-Run the **`/feature-dev`** workflow, but in an **autonomous variant** — its normal approval gates are collapsed under the operating rules above:
+Run the **`/feature-dev:feature-dev`** workflow, but in an **autonomous variant** — its normal approval gates are collapsed under the operating rules above:
 
 - Phase 1–2 (Discovery, Codebase Exploration): do fully — launch code-explorer agents, read the key files they return.
 - Phase 3 (Clarifying Questions): **resolve ambiguities yourself** from the codebase and ticket. Only stop-and-ask per the operating rules if genuinely blocking.
@@ -81,22 +83,22 @@ Run the **`/feature-dev`** workflow, but in an **autonomous variant** — its no
 
 ## Phase 2 — Local quality review
 
-Run `/feature-dev` Phase 6: launch the 3 code-reviewer agents (simplicity/DRY, bugs/correctness, conventions). **Auto-fix high-severity and clearly-correct issues.** Only surface a review finding to the user if it implies a stop-and-ask architectural decision.
+Run `/feature-dev:feature-dev` Phase 6: launch the 3 code-reviewer agents (simplicity/DRY, bugs/correctness, conventions). **Auto-fix high-severity and clearly-correct issues.** Only surface a review finding to the user if it implies a stop-and-ask architectural decision.
 
 ---
 
 ## Phase 3 — Commit, push, open PR (per repo)
 
-1. Run the repo's formatter/linter before committing (e.g. `gofmt` for Go repos like quiqup-platform — lint CI fails on struct-alignment diffs otherwise). Only run tests for **affected areas**, not the whole suite.
+1. Run the repo's formatter/linter before committing (e.g. `gofmt` for Go repos — lint CI often fails on formatting diffs otherwise). Only run tests for **affected areas**, not the whole suite.
 2. Commit with clear messages. Add a **one-line** CHANGELOG entry if the repo uses one (engineering detail goes in the PR body, not the changelog).
 3. Determine the **default integration branch**: `git remote show origin | grep "HEAD branch"` (usually `main`; some repos use `develop`, e.g. track-parcel). **Never target `staging`.**
 4. Push the branch and open the PR against the default branch with `gh pr create`. The PR body **must include the business value** (why this matters, from the ticket) plus what/how, testing notes, and the `sc-XXXX` link. If business value isn't clear from the ticket, that's a stop-and-ask.
 5. Add the PR as an external link on the Shortcut ticket.
-6. **Immediately decide who reviews this PR** (see 3.1) and, if that's you, **run `/pr-review` now** — before staging, before the pipeline, before `/fix-pr-comments`.
+6. **Immediately decide who reviews this PR** (see 3.1) and, if that's you, **run `/helpers:pr-review` now** — before staging, before the pipeline, before `/helpers:fix-pr-comments`.
 
 ### 3.1 Does CI have a code-reviewer step?
 
-`/fix-pr-comments` can only fix comments that exist. Something must produce them first, and **not every repo has an automated reviewer wired into CI** — so determine which reviewer is on the hook the moment the PR is open:
+`/helpers:fix-pr-comments` can only fix comments that exist. Something must produce them first, and **not every repo has an automated reviewer wired into CI** — so determine which reviewer is on the hook the moment the PR is open:
 
 ```bash
 # in the worktree
@@ -108,12 +110,12 @@ gh pr checks <PR_URL> 2>&1 | head -20
 
 | Finding | What you do |
 |---------|-------------|
-| **No `.github/workflows/`, or no workflow/bot that posts code review comments** | **Run `/pr-review <PR_URL>` yourself, right after opening the PR.** It reviews the diff against the ticket and posts tiered comments (🔴 Critical / 🟡 Warning / 🔵 Suggestion), inline where possible — giving Phase 6 something to work from. |
-| A CI workflow / bot app *does* post review comments | **Do not run `/pr-review`** — let CI review, so you don't duplicate it. Wait for its comments to land (`gh pr checks <PR_URL> --watch`, then `gh pr view <PR_URL> --comments`) before moving on. |
+| **No `.github/workflows/`, or no workflow/bot that posts code review comments** | **Run `/helpers:pr-review <PR_URL>` yourself, right after opening the PR.** It reviews the diff against the ticket and posts tiered comments (🔴 Critical / 🟡 Warning / 🔵 Suggestion), inline where possible — giving Phase 6 something to work from. |
+| A CI workflow / bot app *does* post review comments | **Do not run `/helpers:pr-review`** — let CI review, so you don't duplicate it. Wait for its comments to land (`gh pr checks <PR_URL> --watch`, then `gh pr view <PR_URL> --comments`) before moving on. |
 
 Paste the detection output into the transcript either way — the goal contract checks for it, and "CI reviewed it" and "nobody reviewed it" are otherwise indistinguishable.
 
-Then continue to Phase 4; `/fix-pr-comments` runs in Phase 6 against whichever set of comments now exists.
+Then continue to Phase 4; `/helpers:fix-pr-comments` runs in Phase 6 against whichever set of comments now exists.
 
 ---
 
@@ -132,7 +134,7 @@ Then continue to Phase 4; `/fix-pr-comments` runs in Phase 6 against whichever s
 Poll the PR checks and fix failures until everything is green:
 
 - `gh pr checks <PR> --watch` / `gh run list` / `gh run view <id> --log-failed` to see what failed.
-- Distinguish **real failures** (your code) from **known flakes** — several repos have documented flaky tests (e.g. quiqup-platform coverage-CI flakes, ex-core-api CreateOrderController, invoicer lint OOM). For a known flake, **re-run the job** rather than "fixing" passing code; note it.
+- Distinguish **real failures** (your code) from **known flakes** — repos often have documented flaky tests (check the repo docs, CI history, and any notes you keep on known flakes). For a known flake, **re-run the job** rather than "fixing" passing code; note it.
 - Fix real failures, push, re-check.
 - **Cap: after 3 fix attempts on the same failing step**, stop — run `/goal clear` and present the failure to the user with what you've tried.
 
@@ -140,11 +142,11 @@ Poll the PR checks and fix failures until everything is green:
 
 ## Phase 6 — Resolve the PR review comments
 
-By now the PR has been reviewed — either by CI's reviewer, or by you via `/pr-review` in 3.1 when the repo has no reviewer step.
+By now the PR has been reviewed — either by CI's reviewer, or by you via `/helpers:pr-review` in 3.1 when the repo has no reviewer step.
 
 1. **If CI owns the review, wait for it to finish posting.** Poll `gh pr view <PR> --json reviews,comments` and `gh api repos/{owner}/{repo}/pulls/{n}/reviews` until the review appears and has completed, and **auto-detect the bot's handle** from the review authors (e.g. an app/bot login containing `claude`).
-2. **Confirm comments actually exist** before trying to fix them: `gh pr view <PR_URL> --comments`. **No comments *and* no review having run is a bug, not a pass** — go back to 3.1 and run `/pr-review <PR_URL>` yourself rather than skipping ahead to Phase 7.
-3. Run **`/fix-pr-comments <PR_URL> [reviewer-handle]`** to address the comments: firm fixes applied and replied to automatically; for discretionary Suggestions you're not taking, leave a short reasoned reply. Escalate to the user only per the stop-and-ask criteria.
+2. **Confirm comments actually exist** before trying to fix them: `gh pr view <PR_URL> --comments`. **No comments *and* no review having run is a bug, not a pass** — go back to 3.1 and run `/helpers:pr-review <PR_URL>` yourself rather than skipping ahead to Phase 7.
+3. Run **`/helpers:fix-pr-comments <PR_URL> [reviewer-handle]`** to address the comments: firm fixes applied and replied to automatically; for discretionary Suggestions you're not taking, leave a short reasoned reply. Escalate to the user only per the stop-and-ask criteria.
 4. Push fixes, then loop back through Phase 5 (green) — new commits re-trigger CI.
 5. If the user has separately requested changes on the PR, their comments take priority over the automated ones.
 

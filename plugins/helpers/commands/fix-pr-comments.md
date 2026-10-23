@@ -1,3 +1,7 @@
+---
+description: Methodically address PR review comments — fetch them with gh, categorize, fix, and reply
+---
+
 # Fix PR Review Comments
 
 You are tasked with addressing review comments on a Pull Request. Work through each comment methodically, making changes and responding to reviewers.

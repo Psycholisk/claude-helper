@@ -11,6 +11,8 @@ The reader wants the answer, not the essay. This skill governs the **shape** of 
 
 ## Invocation
 
+Installed from the `helpers` plugin, the command is `/helpers:shorten`. Below it is written `/shorten` for short; treat the two as the same.
+
 Runs only when the reader types `/shorten`. Parse everything after `/shorten` as flags, then a prompt.
 
 | Form | Behaviour |
