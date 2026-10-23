@@ -17,7 +17,6 @@ Skills are richer, multi-file capabilities that Claude loads automatically when 
 
 | Skill | Description |
 |-------|-------------|
-| `qa-buddy` | Run a structured QA pass on a block of work — a Shortcut ticket, GitHub PR, or local branch/diff. Analyzes what changed, builds a test plan tied to acceptance criteria, runs a guided verification (🤖 Claude-verifiable vs 🧑 human-required), and posts a ship/no-ship report back to the ticket or PR |
 | `build-it` | End-to-end autonomous delivery of a Shortcut ticket. Composes the native `/goal` loop with `/feature-dev` (implement), `/pr-review` (review the PR when CI has no code-reviewer step) and `/fix-pr-comments` (resolve review comments): implements the ticket, opens a PR against the default branch, merges to staging for QA, drives the pipeline green, and resolves the review comments — leaving the human only QA + deploy. Runs solo, stopping only for critical/architectural decisions |
 | `adhd` | Shape output for a reader with ADHD: lead with the next action, number multi-step work, restate where you are, suppress tangents, give concrete time estimates, make finished work visible. Explicit-invocation only — `/adhd <prompt>` answers that prompt in this style, bare `/adhd` reshapes the previous response without redoing any work |
 | `shorten` | Strip output down to the straight answer. Explicit-invocation only — bare `/shorten` condenses the previous response without redoing work, `/shorten <prompt>` answers tersely, `-s` toggles terse mode for the whole session, `-en` layers plain-English phrasing (no code, no jargon) on top |
@@ -98,7 +97,7 @@ Your prompt instructions here...
 
 ## Adding New Skills
 
-1. Create a directory in `skills/` named after the skill (e.g. `skills/qa-buddy/`)
+1. Create a directory in `skills/` named after the skill (e.g. `skills/qa-it/`)
 2. Add a `SKILL.md` with YAML frontmatter (`name` + `description`) — the `description` controls when Claude auto-loads the skill
 3. Add any supporting files the skill references (templates, scripts) in the same directory
 4. Run `bash install.sh` to symlink the new skill
