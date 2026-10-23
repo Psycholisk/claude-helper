@@ -1,0 +1,113 @@
+{
+  "name": "delivery",
+  "description": "Ticket-to-production chain: build-it (implement + PR + staging), blast-radius (impact report), qa-it (QA plan and run), ship-it (post-merge close-out and monitoring). Generic: your tracker, repos, deploy signals and channels come from the options below and ~/.claude/delivery-skills/.",
+  "author": {
+    "name": "Psycholisk"
+  },
+  "repository": "https://github.com/Psycholisk/claude-helper",
+  "userConfig": {
+    "tracker": {
+      "type": "string",
+      "title": "Ticket tracker",
+      "description": "Where your tickets live. The skills use its MCP connector.",
+      "options": [
+        "shortcut",
+        "linear",
+        "jira",
+        "github"
+      ],
+      "required": true
+    },
+    "ticket_prefix": {
+      "type": "string",
+      "title": "Ticket ID prefix",
+      "description": "How ticket IDs appear in branch names and PR titles, e.g. sc- (sc-123) or ENG- (ENG-42)."
+    },
+    "ticket_done_state": {
+      "type": "string",
+      "title": "Done state",
+      "description": "Workflow state ship-it moves a shipped ticket to.",
+      "default": "Done"
+    },
+    "gh_org": {
+      "type": "string",
+      "title": "GitHub org",
+      "description": "GitHub org (or user) that owns your repos."
+    },
+    "code_root": {
+      "type": "directory",
+      "title": "Code folder",
+      "description": "Folder holding your local clones (used for cross-repo search and worktree cleanup)."
+    },
+    "repo_globs": {
+      "type": "string",
+      "title": "Repo layout",
+      "description": "Space-separated globs under the code folder that hold one clone each, e.g. \"*\" or \"apps/* services/*\".",
+      "default": "*"
+    },
+    "prod_branch": {
+      "type": "string",
+      "title": "Production branch",
+      "description": "Branch whose code is production.",
+      "default": "main"
+    },
+    "staging_branch": {
+      "type": "string",
+      "title": "Staging branch",
+      "description": "QA/staging branch. Leave empty if you have none.",
+      "default": "staging"
+    },
+    "bump_path": {
+      "type": "string",
+      "title": "GitOps bump path (optional)",
+      "description": "If CI writes deploy-bump commits (e.g. \"[no ci] Bump prod to 1234\"), the folder they touch, e.g. deliver_vars. Leave empty to detect deploys from GitHub Deployments.",
+      "default": ""
+    },
+    "timezone": {
+      "type": "string",
+      "title": "Timezone",
+      "description": "IANA timezone for report times and monitoring checks, e.g. Europe/London or Asia/Dubai."
+    },
+    "owner_name": {
+      "type": "string",
+      "title": "Your name",
+      "description": "How you appear in reports (\"confirmed by <name>\")."
+    },
+    "chat_tool": {
+      "type": "string",
+      "title": "Chat tool",
+      "description": "Where ship-it drafts announcements. Posts go out as you, only after you approve them.",
+      "options": [
+        "slack",
+        "teams",
+        "none"
+      ],
+      "required": true
+    },
+    "owner_chat_id": {
+      "type": "string",
+      "title": "Your chat user ID",
+      "description": "Your user ID in the chat tool, for @-mentions (e.g. Slack U0123456789).",
+      "default": ""
+    },
+    "todo_app": {
+      "type": "string",
+      "title": "Todo app",
+      "description": "Where ship-it creates post-deploy monitoring reminders. \"none\" prints the plan instead.",
+      "options": [
+        "ticktick",
+        "todoist",
+        "things",
+        "reminders",
+        "none"
+      ],
+      "default": "none"
+    },
+    "todo_project": {
+      "type": "string",
+      "title": "Todo project / list",
+      "description": "Project or list for monitoring tasks (add its ID if the app needs one).",
+      "default": ""
+    }
+  }
+}

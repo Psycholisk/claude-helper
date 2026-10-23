@@ -1,0 +1,8 @@
+{
+  "name": "helpers",
+  "description": "Everyday commands (bug-fix, pr-review, fix-pr-comments, refresher) and output-style skills (adhd, shorten).",
+  "author": {
+    "name": "Psycholisk"
+  },
+  "repository": "https://github.com/Psycholisk/claude-helper"
+}

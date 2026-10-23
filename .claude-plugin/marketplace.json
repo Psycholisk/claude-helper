@@ -1,0 +1,21 @@
+{
+  "name": "claude-helper",
+  "owner": {
+    "name": "Psycholisk"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for shipping software: a delivery chain from ticket to production, plus everyday helper commands."
+  },
+  "plugins": [
+    {
+      "name": "delivery",
+      "source": "./plugins/delivery",
+      "description": "Ticket-to-production chain: /delivery:build-it, /delivery:blast-radius, /delivery:qa-it and /delivery:ship-it. Generic, with a first-run setup for your tracker, repos, deploys and channels."
+    },
+    {
+      "name": "helpers",
+      "source": "./plugins/helpers",
+      "description": "Everyday commands (bug-fix, pr-review, fix-pr-comments, refresher) and output-style skills (adhd, shorten)."
+    }
+  ]
+}
